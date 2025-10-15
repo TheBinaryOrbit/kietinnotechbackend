@@ -83,6 +83,7 @@ export const getCompleteUserProfile = async (req, res) => {
             case 'college':
                 completeProfile.profileDetails = user.collegeStudent ? {
                     type: 'collegeStudent',
+                    id: user.collegeStudent.id,
                     college: user.collegeStudent.college,
                     course: user.collegeStudent.course,
                     year: user.collegeStudent.year,
@@ -93,6 +94,7 @@ export const getCompleteUserProfile = async (req, res) => {
             case 'startup':
                 completeProfile.profileDetails = user.startup ? {
                     type: 'startup',
+                    id : user.startup.id,
                     startupName: user.startup.startupName,
                     website: user.startup.website,
                     startupSector: user.startup.startupSector,
@@ -117,6 +119,7 @@ export const getCompleteUserProfile = async (req, res) => {
             case 'school':
                 completeProfile.profileDetails = user.schoolStudent ? {
                     type: 'schoolStudent',
+                    id: user.schoolStudent.id,
                     school: user.schoolStudent.school,
                     standard: user.schoolStudent.standard,
                     board: user.schoolStudent.board,
@@ -127,6 +130,7 @@ export const getCompleteUserProfile = async (req, res) => {
             case 'researcher':
                 completeProfile.profileDetails = user.researcher ? {
                     type: 'researcher',
+                    id: user.researcher.id,
                     uid: user.researcher.uid,
                     universityName: user.researcher.universityName,
                     pursuingDegree: user.researcher.pursuingDegree
