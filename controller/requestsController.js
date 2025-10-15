@@ -133,13 +133,20 @@ export const respondToRequest = async (req, res) => {
                     // get the startup ID
                     const startupId = team.startupId;
 
+                    console.log("Startup ID: ", startupId);
+
                     // create a replica of the startup and set the new user as the owner
                     const startupdata = await tx.startup.findUnique({
-                        where: { id: startupId },
+                        where: { userId: startupId },
                     });
+                    
+
+                    console.log("Startup Data: ", startupdata);
 
                     delete startupdata.id;
                     delete startupdata.userId;
+
+                    console.log("Startup Data: ", startupdata);
 
                     // mapping the same data
                     await tx.startup.create({
