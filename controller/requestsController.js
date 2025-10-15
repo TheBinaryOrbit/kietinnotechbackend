@@ -119,44 +119,47 @@ export const respondToRequest = async (req, res) => {
                         member3Id: true,
                         member4Id: true,
                         teamSize: true,
-                        startupId: true
+                        startupId: true,
+                        participationCategory: true
                     }
                 });
 
 
 
-                const userStartup = await tx.startup.findFirst({
-                    where: {
-                        userId: userId
-                    }
-                })
-
-                if (!userStartup) {
-                    // get the startup ID
-                    const startupId = team.startupId;
-
-                    console.log("Startup ID: ", startupId);
-
-                    // create a replica of the startup and set the new user as the owner
-                    const startupdata = await tx.startup.findUnique({
-                        where: { id : startupId },
-                    });
-                    
-
-                    console.log("Startup Data: ", startupdata);
-
-                    delete startupdata.id;
-                    delete startupdata.userId;
-
-                    console.log("Startup Data: ", startupdata);
-
-                    // mapping the same data
-                    await tx.startup.create({
-                        data: {
-                            ...startupdata,
-                            userId: userId,
+                if (team.participationCategory == 'startup') {
+                    const userStartup = await tx.startup.findFirst({
+                        where: {
+                            userId: userId
                         }
-                    });
+                    })
+
+                    if (!userStartup) {
+                        // get the startup ID
+                        const startupId = team.startupId;
+
+                        console.log("Startup ID: ", startupId);
+
+                        // create a replica of the startup and set the new user as the owner
+                        const startupdata = await tx.startup.findUnique({
+                            where: { id: startupId },
+                        });
+
+
+                        console.log("Startup Data: ", startupdata);
+
+                        delete startupdata.id;
+                        delete startupdata.userId;
+
+                        console.log("Startup Data: ", startupdata);
+
+                        // mapping the same data
+                        await tx.startup.create({
+                            data: {
+                                ...startupdata,
+                                userId: userId,
+                            }
+                        });
+                    }
                 }
 
                 let updateData = {};
