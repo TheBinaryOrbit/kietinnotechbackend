@@ -122,6 +122,34 @@ export const respondToRequest = async (req, res) => {
                     }
                 });
 
+
+                const userStartup = await tx.startup.findFirst({
+                    where: {
+                        userId: userId
+                    }
+                })
+
+                if (!userStartup) {
+                    // get the startup ID
+                    const startupId = user.startup.id;
+
+                    // create a replica of the startup and set the new user as the owner
+                    const startupdata = await tx.startup.findUnique({
+                        where: { id: startupId },
+                    });
+
+                    delete startupdata.id;
+                    delete startupdata.userId;
+
+                    // mapping the same data
+                    await tx.startup.create({
+                        data: {
+                            ...startupdata,
+                            userId: userId,
+                        }
+                    });
+                }
+
                 let updateData = {};
                 if (!team.member1Id) {
                     updateData.member1Id = userId;
@@ -155,6 +183,9 @@ export const respondToRequest = async (req, res) => {
                         data: { isCompleted: true }
                     });
                 }
+
+
+
 
                 // Reject all other pending requests for this user
                 await tx.requests.updateMany({
