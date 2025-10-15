@@ -324,6 +324,7 @@ export const getUserTeam = async (req, res) => {
                             select: {
                                 id: true,
                                 name: true,
+                                profileImage : true,
                             }
                         }
                     },
