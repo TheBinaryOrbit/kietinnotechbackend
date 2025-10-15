@@ -15,7 +15,7 @@ export const createTeam = async (req, res) => {
             inovationIdeaDesc
         } = req.body;
         
-        const { id: leaderUserId, participationCategory, isKietian } = req.user;
+        const { id : leaderUserId, participationCategory, isKietian } = req.user;
 
         // Basic validation
         if (!teamName || !department || !memberUserIds || !Array.isArray(memberUserIds)) {
@@ -104,7 +104,7 @@ export const createTeam = async (req, res) => {
 
         // Category-specific validations and data
         if (participationCategory === "college") {
-            if (!categoryId || !problemStatementId) {
+            if (!categoryId || !problemStatementId || !inovationIdeaDesc || !inovationIdeaName) {
                 return res.status(400).json({
                     success: false,
                     message: 'Category and Problem Statement are required for college students'
@@ -112,6 +112,8 @@ export const createTeam = async (req, res) => {
             }
             teamData.categoryId = categoryId;
             teamData.problemStatementId = problemStatementId;
+            teamData.inovationIdeaName = inovationIdeaName;
+            teamData.inovationIdeaDesc = inovationIdeaDesc;
         }
 
         if (participationCategory === "startup") {
@@ -316,6 +318,7 @@ export const getUserTeam = async (req, res) => {
                 ]
             },
             include: {
+                requests: true,
                 leaderUser: {
                     select: {
                         id: true,

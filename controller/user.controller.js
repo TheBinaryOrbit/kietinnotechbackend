@@ -264,11 +264,11 @@ export const deleteUserAccount = async (req, res) => {
 
 export const completeCollageStudentProfile = async (req, res) => {
     try {
-        const { college, course, year , branch } = req.body;
+        const { college, course, year , branch , uid } = req.body;
         const userId = req.user.id;
 
         // Validate required fields
-        if (!college || !course || !year || !branch) {
+        if (!college || !course || !year || !branch || !uid) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
@@ -289,7 +289,8 @@ export const completeCollageStudentProfile = async (req, res) => {
                 college,
                 course,
                 year,
-                branch
+                branch,
+                uid
             }
         });
 
