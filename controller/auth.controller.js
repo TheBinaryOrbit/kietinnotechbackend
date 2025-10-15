@@ -12,6 +12,8 @@ export const googleCallback = async (req, res) => {
             { expiresIn: '7d' }
         );
 
+        console.log("Generated JWT Token:", token);
+
         // Set token as httpOnly cookie
         res.cookie('token', token, {
             httpOnly: true,
@@ -20,8 +22,8 @@ export const googleCallback = async (req, res) => {
         });
 
         // Redirect to frontend success page
-        const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000';
-        res.redirect(`${frontendURL}/complete-profile`);
+        const frontendURL = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendURL}/register?token=${token}`);
     } catch (error) {
         console.error('Error in OAuth callback:', error);
         res.redirect('/login/failed');
@@ -77,7 +79,6 @@ export const logout = (req, res) => {
         });
     });
 }
-
 
 export const getInfo = async (req, res) => {
     if (req.user) {

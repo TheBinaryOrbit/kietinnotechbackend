@@ -39,6 +39,124 @@ export const getUserProfile = async (req, res) => {
     }
 };
 
+// Get complete user profile with all related data
+export const getCompleteUserProfile = async (req, res) => {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: req.user.id },
+            include: {
+                collegeStudent: true,
+                startup: true,
+                schoolStudent: true,
+                researcher: true
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Map all data into a single JSON response
+        const completeProfile = {
+            // Basic user information
+            id: user.id,
+            name: user.name,
+            userId: user.userId,
+            email: user.email,
+            phonenumber: user.phonenumber,
+            googleId: user.googleId,
+            profileImage: user.profileImage,
+            participationCategory: user.participationCategory,
+            isKietian: user.isKietian,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+
+            // Category-specific profile data
+            profileDetails: null
+        };
+
+        // Map category-specific data based on participation category
+        switch (user.participationCategory) {
+            case 'college':
+                completeProfile.profileDetails = user.collegeStudent ? {
+                    type: 'collegeStudent',
+                    college: user.collegeStudent.college,
+                    course: user.collegeStudent.course,
+                    year: user.collegeStudent.year,
+                    branch: user.collegeStudent.branch
+                } : null;
+                break;
+
+            case 'startup':
+                completeProfile.profileDetails = user.startup ? {
+                    type: 'startup',
+                    startupName: user.startup.startupName,
+                    website: user.startup.website,
+                    startupSector: user.startup.startupSector,
+                    stage: user.startup.stage,
+                    city: user.startup.city,
+                    teamSize: user.startup.teamSize,
+                    founderName: user.startup.founderName,
+                    founderEmail: user.startup.founderEmail,
+                    founderUid: user.startup.founderUid,
+                    founderPhonenumber: user.startup.founderPhonenumber,
+                    description: user.startup.description,
+                    problemSolving: user.startup.problemSolving,
+                    uvp: user.startup.uvp,
+                    pitchDeckLink: user.startup.pitchDeckLink,
+                    isFunded: user.startup.isFunded,
+                    fundedBy: user.startup.fundedBy,
+                    eventExpections: user.startup.eventExpections,
+                    additionalInfo: user.startup.additionalInfo
+                } : null;
+                break;
+
+            case 'school':
+                completeProfile.profileDetails = user.schoolStudent ? {
+                    type: 'schoolStudent',
+                    school: user.schoolStudent.school,
+                    standard: user.schoolStudent.standard,
+                    board: user.schoolStudent.board,
+                    uid: user.schoolStudent.uid
+                } : null;
+                break;
+
+            case 'researcher':
+                completeProfile.profileDetails = user.researcher ? {
+                    type: 'researcher',
+                    uid: user.researcher.uid,
+                    universityName: user.researcher.universityName,
+                    pursuingDegree: user.researcher.pursuingDegree
+                } : null;
+                break;
+
+            default:
+                completeProfile.profileDetails = null;
+        }
+
+        // Add completion status
+        completeProfile.isProfileComplete = {
+            basicProfile: !!(user.participationCategory && user.phonenumber),
+            categoryProfile: !!completeProfile.profileDetails
+        };
+
+        res.status(200).json({
+            success: true,
+            user: completeProfile
+        });
+
+    } catch (error) {
+        console.error('Error fetching complete user profile:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
+
 // Update user profile
 export const completeProfile = async (req, res) => {
     try {
@@ -165,7 +283,7 @@ export const completeCollageStudentProfile = async (req, res) => {
             });
         }
 
-        const collegeStudentProfile = await prisma.collegeStudentProfile.create({
+        const collegeStudentProfile = await prisma.collegeStudent.create({
             data: {
                 userId,
                 college,
@@ -212,7 +330,7 @@ export const completeSchoolStudentProfile = async (req, res) => {
             });
         }
 
-        const schoolStudentProfile = await prisma.schoolStudentProfile.create({
+        const schoolStudentProfile = await prisma.schoolStudent.create({
             data: {
                 userId,
                 school,
@@ -267,7 +385,7 @@ export const completeResearcherProfile = async (req, res) => {
             });
         }
 
-        const researcherProfile = await prisma.researcherProfile.create({
+        const researcherProfile = await prisma.researcher.create({
             data: {
                 userId,
                 pursuingDegree,
@@ -301,25 +419,26 @@ export const completeResearcherProfile = async (req, res) => {
 export const completeStartupProfile = async (req, res) => {
     try {
         const { startupName, website, startupSector, stage, city, teamSize, founderName, founderEmail, founderPhonenumber, description, problemSolving, uvp, pitchDeckLink, isFunded, fundedBy, eventExpections, additionalInfo, founderUid } = req.body;
+        const userId = req.user.id;
 
 
 
-        if (!startupName || !website || !startupSector || !stage || !city || !teamSize || !founderName || !founderEmail || !founderPhonenumber || !description || !problemSolving || !uvp || !pitchDeckLink || !eventExpections || !founderUid) {
+        if (!startupName || !website || !startupSector || !stage || !city || !founderName || !founderEmail || !founderPhonenumber || !description || !problemSolving || !uvp || !pitchDeckLink || !eventExpections || !founderUid) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
             });
         }
 
-        founderUid = founderUid.trim();
-        if (founderUid.length !== 12) {
+        
+        if (founderUid.trim().length !== 12) {
             return res.status(400).json({
                 success: false,
                 message: 'Founder UID/Aadhar must be 12 characters long'
             });
         }
 
-        const startupProfile = await prisma.startupProfile.create({
+        const startupProfile = await prisma.startup.create({
             data: {
                 userId,
                 startupName,

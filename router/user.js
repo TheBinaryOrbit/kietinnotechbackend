@@ -1,6 +1,7 @@
 import express from 'express';
 import { 
     getUserProfile,  
+    getCompleteUserProfile,
     completeProfile, 
     deleteUserAccount ,
     completeCollageStudentProfile,
@@ -17,6 +18,9 @@ router.use(authenticateToken);
 
 // Get user profile
 router.get('/profile', getUserProfile);
+
+// Get complete user profile with all related data
+router.get('/check/complete-profile', getCompleteUserProfile);
 
 // Update user profile
 router.put('/complete-profile', completeProfile);
