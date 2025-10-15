@@ -75,7 +75,7 @@ model collegeStudent {
   college String
   course  String
   year    Int
-  uid     String     @unique @default("N/A")
+  uid     String     @unique @default(dbgenerated("substr(md5(random()::text), 1, 6)"))
   branch  department
 
   userId Int  @unique
