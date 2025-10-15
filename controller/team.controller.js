@@ -127,15 +127,13 @@ export const createTeam = async (req, res) => {
         }
 
         if (participationCategory === "school") {
-            if (!schoolStudentId || !categoryId || !problemStatementId) {
+            if (!schoolStudentId) {
                 return res.status(400).json({
                     success: false,
-                    message: 'School student ID, category, and problem statement are required for school students'
+                    message: 'School student ID is required for school students'
                 });
             }
             teamData.schoolStudentId = schoolStudentId;
-            teamData.categoryId = categoryId;
-            teamData.problemStatementId = problemStatementId;
             teamData.inovationIdeaName = inovationIdeaName;
             teamData.inovationIdeaDesc = inovationIdeaDesc;
         }
