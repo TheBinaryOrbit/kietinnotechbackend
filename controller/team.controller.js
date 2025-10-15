@@ -318,7 +318,18 @@ export const getUserTeam = async (req, res) => {
                 ]
             },
             include: {
-                requests: true,
+                requests: {
+                    select :{
+                        id: true,
+                        status: true,
+                        requestedTo: {
+                            select: {
+                                id: true,
+                                name: true,
+                            }
+                        }
+                    },
+                },
                 leaderUser: {
                     select: {
                         id: true,

@@ -107,7 +107,7 @@ export const searchUsers = async (req, res) => {
                 name: true,
                 email: true,
                 userId: true,
-                // profileImage: true,
+                profileImage: true,
                 participationCategory: true,
                 isKietian: true
             },
