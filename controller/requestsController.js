@@ -139,7 +139,7 @@ export const respondToRequest = async (req, res) => {
 
                     // create a replica of the startup and set the new user as the owner
                     const startupdata = await tx.startup.findUnique({
-                        where: { userId: startupId },
+                        where: { id : startupId },
                     });
                     
 
