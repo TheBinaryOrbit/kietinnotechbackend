@@ -118,9 +118,11 @@ export const respondToRequest = async (req, res) => {
                         member2Id: true,
                         member3Id: true,
                         member4Id: true,
-                        teamSize: true
+                        teamSize: true,
+                        startupId: true
                     }
                 });
+
 
 
                 const userStartup = await tx.startup.findFirst({
