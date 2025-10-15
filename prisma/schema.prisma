@@ -1,0 +1,249 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id          Int     @id @default(autoincrement())
+  name        String
+  email       String  @unique
+  phonenumber String? @unique
+  userId String @unique @default(dbgenerated("substr(md5(random()::text), 1, 6)"))
+
+  // Google OAuth fields
+  googleId     String? @unique
+  profileImage String?
+
+  participationCategory participationCategory?
+  isKietian             Boolean                @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leaderUser     team[] @relation("leaderUser")
+  teamsAsMember1 team[] @relation("member1")
+  teamsAsMember2 team[] @relation("member2")
+  teamsAsMember3 team[] @relation("member3")
+  teamsAsMember4 team[] @relation("member4")
+
+  // collage student profile
+  collegeStudent collegeStudent?
+
+  // startup profile
+  startup startup?
+
+  // school student profile
+  schoolStudent schoolStudent?
+
+  // researcher profile
+  researcher researcher?
+
+  // requested 
+  requestsMade     requests[] @relation("requestedBy")
+  requestsReceived requests[] @relation("requestedTo")
+}
+
+model category {
+  id                Int                @id @default(autoincrement())
+  name              String
+  description       String
+  problemStatements problemStatement[]
+  teams             team[]
+}
+
+model problemStatement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  categoryId  Int
+  category    category @relation(fields: [categoryId], references: [id])
+  teams       team[]
+}
+
+model collegeStudent {
+  id      Int        @id @default(autoincrement())
+  college String
+  course  String
+  year    Int
+  branch  department
+
+  userId Int  @unique
+  user   user @relation(fields: [userId], references: [id])
+}
+
+model startup {
+  id                 Int          @id @default(autoincrement())
+  startupName        String
+  website            String
+  startupSector      String
+  stage              StartupStage @default(ideation)
+  city               String
+  teamSize           Int
+  founderName        String
+  founderEmail       String
+  founderUid         String       @unique
+  founderPhonenumber String
+  description        String
+  problemSolving     String
+  uvp                String
+  pitchDeckLink      String
+  isFunded           Boolean      @default(false)
+  fundedBy           String?
+  eventExpections    String       @default("others")
+  additionalInfo     String?
+  teams              team[]
+
+  userId Int  @unique
+  user   user @relation(fields: [userId], references: [id])
+}
+
+model schoolStudent {
+  id       Int    @id @default(autoincrement())
+  school   String
+  standard Int
+  board    String
+  uid      String @unique
+  teams    team[]
+
+  userId Int  @unique
+  user   user @relation(fields: [userId], references: [id])
+}
+
+model researcher {
+  id             Int    @id @default(autoincrement())
+  uid            String @unique
+  universityName String
+  pursuingDegree degree
+  teams          team[]
+
+  userId Int  @unique
+  user   user @relation(fields: [userId], references: [id])
+}
+
+model team {
+  id       Int    @id @default(autoincrement())
+  teamName String?
+  teamCode String @unique
+
+  // leader details
+  leaderUserId Int
+  leaderUser   user @relation("leaderUser", fields: [leaderUserId], references: [id])
+
+  // participation category
+  participationCategory participationCategory?
+
+  // team member details
+  member1Id Int?
+  member2Id Int?
+  member3Id Int?
+  member4Id Int?
+
+  member1 user? @relation("member1", fields: [member1Id], references: [id])
+  member2 user? @relation("member2", fields: [member2Id], references: [id])
+  member3 user? @relation("member3", fields: [member3Id], references: [id])
+  member4 user? @relation("member4", fields: [member4Id], references: [id])
+
+  isKeitian Boolean @default(false)
+  teamSize  Int?
+
+  // category of team only for college
+  categoryId         Int?
+  problemStatementId Int?
+  category           category?         @relation(fields: [categoryId], references: [id])
+  problemStatement   problemStatement? @relation(fields: [problemStatementId], references: [id])
+
+  // if category is startup
+  startupId Int?
+  startup   startup? @relation(fields: [startupId], references: [id])
+
+  // if category is school & scholar
+  schoolStudentId Int? @unique
+  researcherId    Int? @unique
+
+  schoolStudent schoolStudent? @relation(fields: [schoolStudentId], references: [id])
+  researcher    researcher?    @relation(fields: [researcherId], references: [id])
+
+  inovationIdeaName String?
+  inovationIdeaDesc String?
+
+  // leader department
+  department department
+
+  // status
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // requests relation
+  requests     requests[]
+  requestsCount Int @default(0)
+}
+
+model requests {
+  id Int @id @default(autoincrement())
+
+  teamId Int
+  team   team @relation(fields: [teamId], references: [id])
+
+  requestedById Int
+  requestedBy   user @relation("requestedBy", fields: [requestedById], references: [id])
+
+  requestedToId Int
+  requestedTo   user @relation("requestedTo", fields: [requestedToId], references: [id])
+
+  status requestStatus @default(pending)
+}
+
+enum participationCategory {
+  school
+  college
+  researcher
+  startup
+}
+
+enum StartupStage {
+  ideation
+  prototype
+  early
+  scaling
+}
+
+enum department {
+  CSE
+  IT
+  CSIT
+  CS
+  CSE_AI
+  CSE_AIML
+  ECE
+  ELCE
+  EEE
+  ME
+  CSE_Cyber_Security
+  CSE_Data_Science
+  ECE_VLSI
+  AMIA
+  Other
+}
+
+enum degree {
+  Masters
+  PhD
+  Other
+}
+
+enum requestStatus {
+  pending
+  accepted
+  rejected
+}
