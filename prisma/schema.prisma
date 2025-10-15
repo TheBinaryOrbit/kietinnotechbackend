@@ -92,7 +92,7 @@ model startup {
   teamSize           Int
   founderName        String
   founderEmail       String
-  founderUid         String       @unique
+  founderUid         String
   founderPhonenumber String
   description        String
   problemSolving     String
