@@ -75,7 +75,7 @@ model collegeStudent {
   college String
   course  String
   year    Int
-  uid     String     @unique
+  uid     String     @unique @default("N/A")
   branch  department
 
   userId Int  @unique
