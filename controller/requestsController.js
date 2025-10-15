@@ -131,7 +131,7 @@ export const respondToRequest = async (req, res) => {
 
                 if (!userStartup) {
                     // get the startup ID
-                    const startupId = user.startup.id;
+                    const startupId = team.startupId;
 
                     // create a replica of the startup and set the new user as the owner
                     const startupdata = await tx.startup.findUnique({
