@@ -178,7 +178,7 @@ model team {
   inovationIdeaDesc String?
 
   // leader department
-  department department
+  department department?
 
   // status
   isCompleted Boolean  @default(false)
