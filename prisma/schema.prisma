@@ -234,11 +234,12 @@ enum department {
   CSE_Data_Science
   ECE_VLSI
   AMIA
-  MAC
+  MCA
   MBA
   B_PHARMA
   Other
 }
+
 
 enum degree {
   Masters
