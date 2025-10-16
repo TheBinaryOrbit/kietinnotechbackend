@@ -26,6 +26,12 @@ export const getUserProfile = async (req, res) => {
             });
         }
 
+        if(user.phonenumber !== null && user.participationCategory !== null){
+            user.isProfileComplete = {
+                basicProfile: true
+            }
+        }
+
         res.status(200).json({
             success: true,
             user
