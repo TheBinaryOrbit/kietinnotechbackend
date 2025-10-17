@@ -2,11 +2,19 @@ import prisma from "../utils/prismaClient.js";
 
 export const getCategories = async (req, res) => {
     try {
-        const categories = await prisma.category.findMany({
+
+        const year = req.query.year ? parseInt(req.query.year) : null;
+        
+        let categories = await prisma.category.findMany({
             include: {
                 problemStatements: true
             }
         });
+
+
+        if(year != 1){
+            categories = categories.filter(category => category.id != 6);
+        }
 
         res.status(200).json({
             success: true,
