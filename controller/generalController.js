@@ -141,7 +141,7 @@ export const getParticipationStats   = async (req, res) => {
         const stats = {
             totalUsers: `${await prisma.user.count()}+`,
             totalTeams: `${await prisma.team.count()}+`,
-            totalPrizePool: `${await prisma.category.count()}+`,
+            totalPrizePool: `₹2.6L+`,
             totalAwards: "100+"
         }
 
