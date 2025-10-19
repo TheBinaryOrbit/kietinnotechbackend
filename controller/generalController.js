@@ -135,3 +135,26 @@ export const searchUsers = async (req, res) => {
         });
     }
 };
+
+export const getParticipationStats   = async (req, res) => {
+    try {
+        const stats = {
+            totalUsers: `${await prisma.user.count()}+`,
+            totalTeams: `${await prisma.team.count()}+`,
+            totalPrizePool: `${await prisma.category.count()}+`,
+            totalAwards: "100+"
+        }
+
+        res.status(200).json({
+            success: true,
+            data: stats
+        });
+
+    } catch (error) {
+        console.error('Error fetching participation stats:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+};
